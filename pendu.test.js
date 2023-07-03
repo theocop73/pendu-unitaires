@@ -1,5 +1,5 @@
 import {test , expect } from 'vitest'
-const { getRandomWord, playGame, drawHangman, displayWord, initializeUncoveredWord, updateUncoveredWord, isLetterValid, isLetterInWord, isWordGuessed } = require('./pendu');
+const { getRandomWord, playGame, drawHangman, displayWord, initializeUncoveredWord, updateUncoveredWord, isLetterValid, isLetterInWord, isWordGuessed, decrementRemainingGuesses } = require('./pendu');
 
   
 
@@ -48,6 +48,17 @@ test('Test if uncovered word is initialized correctly', (t) => {
     const guessedLetters = ['n', 'g', 'm'];
     t.expect(isWordGuessed(secretWord, guessedLetters)).toBe(false);
   });
+
+  test('Decrement remaining guesses when incorrect letter is guessed', () => {
+    let remainingGuesses = 5;
+    const guessedLetter = 'x';
+    const updatedRemainingGuesses = decrementRemainingGuesses(remainingGuesses, guessedLetter);
+    expect(updatedRemainingGuesses).toBe(4);
+  });
+
+  
+
+  
 
  
   

@@ -150,6 +150,13 @@ function displayWord() {
   console.log(displayedWord);
 }
 
+function decrementRemainingGuesses(remainingGuesses, guessedLetter) {
+  if (!secretWord.includes(guessedLetter)) {
+    return remainingGuesses - 1;
+  }
+  return remainingGuesses;
+}
+
 async function playGame() {
   console.log('Welcome to Hangman!');
 
@@ -192,7 +199,7 @@ async function playGame() {
       }
     } else {
       console.log('Incorrect guess!');
-      remainingGuesses--;
+      remainingGuesses = decrementRemainingGuesses(remainingGuesses, guessedLetter);
 
       if (remainingGuesses === 0) {
         console.log('Game over! You lost.');
@@ -204,4 +211,4 @@ async function playGame() {
 }
 
 playGame();
-module.exports = { getRandomWord, playGame, drawHangman, displayWord, initializeUncoveredWord, updateUncoveredWord, isLetterValid, isLetterInWord, isWordGuessed };
+module.exports = { getRandomWord, playGame, drawHangman, displayWord, initializeUncoveredWord, updateUncoveredWord, isLetterValid, isLetterInWord, isWordGuessed, decrementRemainingGuesses };
