@@ -1,59 +1,108 @@
 const prompts = require('prompts');
+const axios = require('axios');
 
-const words = ['hangman', 'computer', 'javascript', 'nodejs'];
+let secretWord = '';
+let wordCategory = '';
+let guessedLetters = [];
+let remainingGuesses = 6;
 
-async function playHangman() {
-  const secretWord = chooseSecretWord();
-  let uncoveredWord = initializeUncoveredWord(secretWord);
-
-  let remainingGuesses = 10;
-  let guessedLetters = [];
-
-  while (remainingGuesses > 0 && uncoveredWord !== secretWord) {
-    console.log(`Mot à deviné: ${uncoveredWord}`);
-    console.log(`Essais restants: ${remainingGuesses}`);
-    console.log(`lettres devinée: ${guessedLetters.join(', ')}`);
-
-    const response = await prompts({
-        type: 'text',
-        name: 'letter',
-        message: 'hop hop hop tu me donnes une lettre:',
-        validate: value => {
-          const regex = /^[a-zA-Z]$/; 
-          if (!regex.test(value)) {
-            return 'on joue au pendu pourquoi tu met autre chose qu\'UNE lettre.';
-          }
-          return true;
-        }
-      });
-
-    const guessedLetter = response.letter.toLowerCase();
-
-    if (!guessedLetters.includes(guessedLetter)) {
-      guessedLetters.push(guessedLetter);
-
-      if (secretWord.includes(guessedLetter)) {
-        uncoveredWord = updateUncoveredWord(secretWord, uncoveredWord, guessedLetter);
-        console.log('Bien vu!');
-      } else {
-        remainingGuesses--;
-        console.log('Raté nullos!');
-      }
-    } else {
-      console.log('concentre toi tu as déjà proposé cette lettre');
+async function getRandomWord() {
+    try {
+      const response = await axios.get('https://trouve-mot.fr/api/random');
+      const wordData = response.data;
+      secretWord = wordData[0].name.toLowerCase();
+      wordCategory = wordData[0].categorie
+      return secretWord
+    } catch (error) {
+      console.error('Error fetching random word:', error.message);
+      process.exit(1);
     }
   }
 
-  if (uncoveredWord === secretWord) {
-    console.log(`LESGO LE MOT ETAIT BEL ET BIEN  "${secretWord}"!`);
-  } else {
-    console.log(`looser , le mot était : "${secretWord}"`);
-  }
-}
 
-function chooseSecretWord() {
-  const randomIndex = Math.floor(Math.random() * words.length);
-  return words[randomIndex];
+
+function drawHangman() {
+  const drawings = [
+    `
+     _____
+    |     |
+    |     
+    |     
+    |     
+    |     
+   _|_
+  |   |______
+  |__________|
+  `,
+    `
+     _____
+    |     |
+    |     o
+    |     
+    |     
+    |     
+   _|_
+  |   |______
+  |__________|
+  `,
+    `
+     _____
+    |     |
+    |     o
+    |     |
+    |     
+    |     
+   _|_
+  |   |______
+  |__________|
+  `,
+    `
+     _____
+    |     |
+    |     o
+    |    /|
+    |     
+    |     
+   _|_
+  |   |______
+  |__________|
+  `,
+    `
+     _____
+    |     |
+    |     o
+    |    /|\\
+    |     
+    |     
+   _|_
+  |   |______
+  |__________|
+  `,
+    `
+     _____
+    |     |
+    |     o
+    |    /|\\
+    |    /  
+    |     
+   _|_
+  |   |______
+  |__________|
+  `,
+    `
+     _____
+    |     |
+    |     o
+    |    /|\\
+    |    / \\
+    |     
+   _|_
+  |   |______
+  |__________|
+  `
+  ];
+
+  console.log(drawings[6 - remainingGuesses]);
 }
 
 function initializeUncoveredWord(secretWord) {
@@ -74,4 +123,85 @@ function updateUncoveredWord(secretWord, uncoveredWord, letter) {
   return newUncoveredWord;
 }
 
-playHangman();
+function isLetterValid(letter) {
+  const regex = /^[a-zA-Z]$/;
+  return regex.test(letter);
+}
+
+function isLetterInWord(secretWord, letter) {
+  return secretWord.includes(letter);
+}
+
+function isWordGuessed(secretWord, guessedLetters) {
+  const secretLetters = secretWord.split('');
+  return secretLetters.every((letter) => guessedLetters.includes(letter));
+}
+
+
+function displayWord() {
+  let displayedWord = '';
+  for (const letter of secretWord) {
+    if (guessedLetters.includes(letter)) {
+      displayedWord += letter;
+    } else {
+      displayedWord += '_';
+    }
+  }
+  console.log(displayedWord);
+}
+
+async function playGame() {
+  console.log('Welcome to Hangman!');
+
+  secretWord = await getRandomWord();
+  let uncoveredWord = initializeUncoveredWord(secretWord);
+
+  while (remainingGuesses > 0) {
+    console.log(`\nRemaining guesses: ${remainingGuesses}`);
+    console.log(`\nDiscovered Letters: ${guessedLetters}`);
+    drawHangman();
+    displayWord();
+
+    const response = await prompts({
+      type: 'text',
+      name: 'letter',
+      message: 'Guess a letter:'
+    });
+
+    const guessedLetter = response.letter.toLowerCase();
+
+    if (!isLetterValid(guessedLetter)) {
+      console.log('Please enter a valid letter!');
+      continue;
+    }
+
+    if (guessedLetters.includes(guessedLetter)) {
+      console.log('You already guessed that letter!');
+      continue;
+    }
+
+    guessedLetters.push(guessedLetter);
+
+    if (isLetterInWord(secretWord, guessedLetter)) {
+      uncoveredWord = updateUncoveredWord(secretWord, uncoveredWord, guessedLetter);
+      console.log('Correct guess!');
+
+      if (isWordGuessed(secretWord, guessedLetters)) {
+        console.log('Congratulations! You won!');
+        return;
+      }
+    } else {
+      console.log('Incorrect guess!');
+      remainingGuesses--;
+
+      if (remainingGuesses === 0) {
+        console.log('Game over! You lost.');
+        console.log(`\nThe secret word was: ${secretWord}`);
+        return;
+      }
+    }
+  }
+}
+
+playGame();
+module.exports = { getRandomWord, playGame, drawHangman, displayWord, initializeUncoveredWord, updateUncoveredWord, isLetterValid, isLetterInWord, isWordGuessed };

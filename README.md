@@ -23,3 +23,19 @@ repo pour suivre 3 jours de formation sur les tests unitaires
 pratique de conception de test?**  
 *faire des tests non indépendants: les tests unitaires ne doivent pas dépendre du résultat d'un autre tests, sinon cela devient plus compliqué de localisé les bugs*
 
+
+
+**Liste des fonctions pour le pendu**
+
+1. Une fonction qui récupère un mot aléatoire bien formatté !
+2. Une fonction qui met n _ par rapport à la taille du mot secret
+3. Une fonction qui vérifie si la lettre proposé est dans le mot
+4. Si la lettre proposé est dans le mot remplacé le _ par la lettre proposé 
+5. Vérifier si une lettre devinée incorrectement réduit le nombre d'essais restants.
+6. Vérifier si le jeu se termine correctement lorsqu'un joueur a gagné.
+7. Vérifier si le jeu se termine correctement lorsqu'un joueur a perdu.
+7. 
+
+
+
+
