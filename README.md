@@ -31,7 +31,7 @@ pratique de conception de test?**
 2. Une fonction qui met n _ par rapport à la taille du mot secret
 3. Une fonction qui vérifie si la lettre proposé est dans le mot
 4. Une fonction qui si la lettre proposé est dans le mot alors remplacé le _ par la lettre proposé 
-5. Vérifier si une lettre devinée incorrectement réduit le nombre d'essais restants.
+5. Vérifier si une lettre incorrectement devinée réduit le nombre d'essais restants.
 6. Vérifier si le jeu se termine correctement lorsqu'un joueur a gagné.
 7. Vérifier si le jeu se termine correctement lorsqu'un joueur a perdu.
 7. 
