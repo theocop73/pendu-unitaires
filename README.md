@@ -55,6 +55,6 @@ pratique de conception de test?**
 | 10 	| isLetterValid("@")                                         	| Vérifier si la lettre est une lettre valide                                     	| false                                            	|
 | 11 	| isLetterValid("")                                          	| Vérifier si la chaîne vide est une lettre valide                                	| false                                            	|
 | 11 	| initializeUncoveredWord('hello')                           	| Vérifier que le mot partiellement découvert est initialisé avec des underscores 	| Le mot partiellement découvert est "_ _ _ _ _"   	|
-| 12 	| updateUncoveredWord('hello', '_____', 'l')                 	| Mettre à jour le mot partiellement dévoilé                                      	| "__ll_"                                          	|
+| 12 	| updateUncoveredWord('hello', '_____', 'l')                 	| Mettre à jour le mot partiellement dévoilé                                      	| "__ll\_"                                          	|
 | 13 	| updateUncoveredWord("test", "t__t", "e")                   	| Mettre à jour le mot partiellement dévoilé                                      	| "te_t"                                           	|
 | 14 	| updateUncoveredWord("test", "t__t", "b")                   	| Ne pas mettre à jour le mot si la lettre n'est pas présente dans le mot         	| "t__t"                                           	|
