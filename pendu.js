@@ -6,11 +6,49 @@ let wordCategory = '';
 let guessedLetters = [];
 let remainingGuesses = 6;
 
+
+function enleverAccents(str) {
+  const accentsMap = {
+    'à': 'a',
+    'â': 'a',
+    'ä': 'a',
+    'á': 'a',
+    'ç': 'c',
+    'é': 'e',
+    'è': 'e',
+    'ê': 'e',
+    'ë': 'e',
+    'í': 'i',
+    'ì': 'i',
+    'î': 'i',
+    'ï': 'i',
+    'ñ': 'n',
+    'ó': 'o',
+    'ò': 'o',
+    'ô': 'o',
+    'ö': 'o',
+    'ú': 'u',
+    'ù': 'u',
+    'û': 'u',
+    'ü': 'u',
+    'ý': 'y',
+    'ÿ': 'y'
+    // Ajoutez d'autres caractères avec leurs équivalents sans accent
+  };
+
+  return str
+    .replace(/[àâäáçéèêëíìîïñóòôöúùûüýÿ]/g, function(match) {
+      return accentsMap[match];
+    })
+    .normalize('NFD') // Convertit les caractères spéciaux en leur équivalent non accentué
+    .replace(/[\u0300-\u036f]/g, ''); // Supprime les caractères diacritiques restants
+}
+
 async function getRandomWord() {
     try {
       const response = await axios.get('https://trouve-mot.fr/api/random');
       const wordData = response.data;
-      secretWord = wordData[0].name.toLowerCase();
+      secretWord = enleverAccents(wordData[0].name.toLowerCase());
       wordCategory = wordData[0].categorie
       return secretWord
     } catch (error) {
@@ -19,7 +57,7 @@ async function getRandomWord() {
     }
   }
 
-
+  
 
 function drawHangman() {
   const drawings = [
@@ -105,6 +143,21 @@ function drawHangman() {
   console.log(drawings[6 - remainingGuesses]);
 }
 
+async function chooseDifficulty() {
+  const response = await prompts({
+    type: 'select',
+    name: 'difficulty',
+    message: 'Choose a difficulty level:',
+    choices: [
+      { title: 'Easy', value: 6 },
+      { title: 'Medium', value: 5 },
+      { title: 'Hard', value: 3 }
+    ]
+  });
+
+  return response.difficulty;
+}
+
 function initializeUncoveredWord(secretWord) {
   return '_'.repeat(secretWord.length);
 }
@@ -150,7 +203,7 @@ function displayWord() {
   console.log(displayedWord);
 }
 
-function decrementRemainingGuesses(remainingGuesses, guessedLetter) {
+function decrementRemainingGuesses(remainingGuesses, guessedLetter, difficulty) {
   if (!secretWord.includes(guessedLetter)) {
     return remainingGuesses - 1;
   }
@@ -162,6 +215,8 @@ async function playGame() {
 
   secretWord = await getRandomWord();
   let uncoveredWord = initializeUncoveredWord(secretWord);
+  const difficulty = await chooseDifficulty();
+  remainingGuesses = difficulty;
 
   while (remainingGuesses > 0) {
     console.log(`\nRemaining guesses: ${remainingGuesses}`);
@@ -176,6 +231,10 @@ async function playGame() {
     });
 
     const guessedLetter = response.letter.toLowerCase();
+    if (guessedLetter == "indice") {
+      console.log(`l'indice est : ${wordCategory}`);
+      continue;
+    }
 
     if (!isLetterValid(guessedLetter)) {
       console.log('Please enter a valid letter!');
@@ -195,19 +254,22 @@ async function playGame() {
 
       if (isWordGuessed(secretWord, guessedLetters)) {
         console.log('Congratulations! You won!');
-        return;
+        console.log(`\nThe secret word was: ${secretWord}`);
+        return true;
       }
     } else {
       console.log('Incorrect guess!');
-      remainingGuesses = decrementRemainingGuesses(remainingGuesses, guessedLetter);
+      remainingGuesses = decrementRemainingGuesses(remainingGuesses, guessedLetter, difficulty);
 
       if (remainingGuesses === 0) {
         console.log('Game over! You lost.');
         console.log(`\nThe secret word was: ${secretWord}`);
-        return;
+        return false;
       }
     }
+    
   }
+  return false;
 }
 
 playGame();
