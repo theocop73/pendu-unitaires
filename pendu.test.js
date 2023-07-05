@@ -64,96 +64,90 @@ test('Test if uncovered word is initialized correctly', (t) => {
 
 
 
-// describe('Hangman Game', () => {
-//   let secretWord;
-//   beforeEach( () => {
-//     vi.restoreAllMocks();
-//     const mockAxiosGet = vi.fn().mockResolvedValue({
-//       data: [{ name: 'test', categorie: 'testcategory' }],
-//     });
-//     const mockGetRandomWord = vi.spyOn(pendu, 'getRandomWord').mockReturnValue('test');
-  
-    
- 
-//     const originalAxiosGet = axios.get;
-//     axios.get = mockAxiosGet;
+describe('Hangman Game', () => {
+  let mockAxiosGet;
+  let secretWord;
+  beforeEach(async () => {
+    mockAxiosGet = vi.fn().mockResolvedValue({
+      data: [{ name: 'test', categorie: 'testcategory' }],
+    });
+    prompts.inject(['t']);
+    prompts.inject(['e']);
+    prompts.inject(['s']);
+    const originalAxiosGet = axios.get;
+    axios.get = mockAxiosGet;
 
-//     secretWord = mockGetRandomWord();
+    const response = await getRandomWord();
+    secretWord = response;
 
-//     prompts.inject(['t']);
-//     prompts.inject(['e']);
-//     prompts.inject(['s']);
-    
-
-//     axios.get = originalAxiosGet;
-//     mockGetRandomWord.mockRestore();
+    axios.get = originalAxiosGet;
 
 
-//   });
+  });
 
-//   it('should play the game', async () => {
-//     const spyConsoleLog = vi.spyOn(console, 'log');
+  it('should play the game', async () => {
+    const spyConsoleLog = vi.spyOn(console, 'log');
 
    
-//     await playGame();
-//      // Vérifie si getRandomWord a été appelé
+    await playGame();
+   
     
     
-//     expect(spyConsoleLog).toHaveBeenCalledWith('Welcome to Hangman!');
+    expect(spyConsoleLog).toHaveBeenCalledWith('Welcome to Hangman!');
 
-//     spyConsoleLog.mockRestore();
+    spyConsoleLog.mockRestore();
   
     
     
-//   });
+  });
   
 
-//   it('should display the hangman drawing', () => {
-//     const consoleSpy = vi.spyOn(console, 'log');
-//     drawHangman();
-//     expect(consoleSpy).toHaveBeenCalled();
-//     consoleSpy.mockRestore();
-//   });
+  it('should display the hangman drawing', () => {
+    const consoleSpy = vi.spyOn(console, 'log');
+    drawHangman();
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
 
-//   it('should display the uncovered word', () => {
+  it('should display the uncovered word', () => {
 
-//     const uncoveredWord = initializeUncoveredWord(secretWord);
-//     expect(uncoveredWord).toBe('____');
+    const uncoveredWord = initializeUncoveredWord(secretWord);
+    expect(uncoveredWord).toBe('____');
   
-//   });
+  });
 
-//   it('should update the uncovered word', () => {
-//     const uncoveredWord = '____';
-//     const updatedUncoveredWord = updateUncoveredWord(secretWord, uncoveredWord, 'e');
-//     expect(updatedUncoveredWord).toBe('_e__');
-//   });
+  it('should update the uncovered word', () => {
+    const uncoveredWord = '____';
+    const updatedUncoveredWord = updateUncoveredWord(secretWord, uncoveredWord, 'e');
+    expect(updatedUncoveredWord).toBe('_e__');
+  });
 
-//   it('should check if a letter is valid', () => {
-//     expect(isLetterValid('a')).toBeTruthy();
-//     expect(isLetterValid('5')).toBeFalsy();
-//     expect(isLetterValid(' ')).toBeFalsy();
-//     expect(isLetterValid('')).toBeFalsy();
-//   });
+  it('should check if a letter is valid', () => {
+    expect(isLetterValid('a')).toBeTruthy();
+    expect(isLetterValid('5')).toBeFalsy();
+    expect(isLetterValid(' ')).toBeFalsy();
+    expect(isLetterValid('')).toBeFalsy();
+  });
 
-//   it('should check if a letter is in the word', () => {
-//     expect(isLetterInWord(secretWord, 't')).toBeTruthy();
-//     expect(isLetterInWord(secretWord, 'a')).toBeFalsy();
-//   });
+  it('should check if a letter is in the word', () => {
+    expect(isLetterInWord(secretWord, 't')).toBeTruthy();
+    expect(isLetterInWord(secretWord, 'a')).toBeFalsy();
+  });
 
-//   it('should check if the word is guessed', () => {
-//     const guessedLetters = ['e', 's'];
-//     expect(isWordGuessed(secretWord, guessedLetters)).toBeFalsy();
-//     guessedLetters.push('t');
-//     expect(isWordGuessed(secretWord, guessedLetters)).toBeTruthy();
-//   });
+  it('should check if the word is guessed', () => {
+    const guessedLetters = ['e', 's'];
+    expect(isWordGuessed(secretWord, guessedLetters)).toBeFalsy();
+    guessedLetters.push('t');
+    expect(isWordGuessed(secretWord, guessedLetters)).toBeTruthy();
+  });
 
-//   it('should decrement remaining guesses', () => {
-//     let remainingGuesses = 5;
-//     const guessedLetter = 'x';
-//     const updatedRemainingGuesses = decrementRemainingGuesses(remainingGuesses, guessedLetter);
-//     expect(updatedRemainingGuesses).toBe(4);
-//   });
-// });
+  it('should decrement remaining guesses', () => {
+    let remainingGuesses = 5;
+    const guessedLetter = 'x';
+    const updatedRemainingGuesses = decrementRemainingGuesses(remainingGuesses, guessedLetter);
+    expect(updatedRemainingGuesses).toBe(4);
+  });
+});
 
   
 
