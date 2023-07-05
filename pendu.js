@@ -143,20 +143,7 @@ function drawHangman() {
   console.log(drawings[6 - remainingGuesses]);
 }
 
-async function chooseDifficulty() {
-  const response = await prompts({
-    type: 'select',
-    name: 'difficulty',
-    message: 'Choose a difficulty level:',
-    choices: [
-      { title: 'Easy', value: 6 },
-      { title: 'Medium', value: 5 },
-      { title: 'Hard', value: 3 }
-    ]
-  });
 
-  return response.difficulty;
-}
 
 function initializeUncoveredWord(secretWord) {
   return '_'.repeat(secretWord.length);
@@ -203,7 +190,7 @@ function displayWord() {
   console.log(displayedWord);
 }
 
-function decrementRemainingGuesses(remainingGuesses, guessedLetter, difficulty) {
+function decrementRemainingGuesses(remainingGuesses, guessedLetter) {
   if (!secretWord.includes(guessedLetter)) {
     return remainingGuesses - 1;
   }
@@ -211,12 +198,11 @@ function decrementRemainingGuesses(remainingGuesses, guessedLetter, difficulty) 
 }
 
 async function playGame() {
-  console.log('Welcome to Hangman!');
+  console.log(`Welcome to Hangman! ${secretWord}`);
 
   secretWord = await getRandomWord();
+  console.log(`SECRET WORD! ${secretWord}`);
   let uncoveredWord = initializeUncoveredWord(secretWord);
-  const difficulty = await chooseDifficulty();
-  remainingGuesses = difficulty;
 
   while (remainingGuesses > 0) {
     console.log(`\nRemaining guesses: ${remainingGuesses}`);
@@ -259,7 +245,7 @@ async function playGame() {
       }
     } else {
       console.log('Incorrect guess!');
-      remainingGuesses = decrementRemainingGuesses(remainingGuesses, guessedLetter, difficulty);
+      remainingGuesses = decrementRemainingGuesses(remainingGuesses, guessedLetter);
 
       if (remainingGuesses === 0) {
         console.log('Game over! You lost.');

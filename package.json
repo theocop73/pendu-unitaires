@@ -1,14 +1,17 @@
 {
   "dependencies": {
     "axios": "^1.4.0",
+    "mock-stdin": "^1.0.0",
     "prompts": "^2.4.2",
     "vitest": "^0.32.2"
   },
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@vitest/coverage-istanbul": "^0.32.4",
+    "@vitest/coverage-v8": "^0.32.4",
     "@vitest/ui": "^0.32.4"
   }
 }
